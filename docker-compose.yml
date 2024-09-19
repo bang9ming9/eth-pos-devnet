@@ -45,6 +45,8 @@ services:
   # proposed via the validators attached to the beacon node.
   beacon-chain:
     image: "gcr.io/prysmaticlabs/prysm/beacon-chain:v5.0.4"
+    networks:
+      - shared_network
     command:
       - --datadir=/consensus/beacondata
       # No peers to sync with in this testnet, so setting to 0
@@ -84,6 +86,8 @@ services:
   # APIs to allow for proof-of-stake consensus via Prysm.
   geth:
     image: "ethereum/client-go:v1.13.12"
+    networks:
+      - shared_network
     command:
       - --http
       - --http.api=eth,net,web3
@@ -122,6 +126,8 @@ services:
   # The validator keys present in the beacon chain genesis state generated a few steps above.
   validator:
     image: "gcr.io/prysmaticlabs/prysm/validator:v5.0.4"
+    networks:
+      - shared_network
     command:
       - --beacon-rpc-provider=beacon-chain:4000
       - --datadir=/consensus/validatordata
@@ -135,3 +141,7 @@ services:
         condition: service_started
     volumes:
       - ./consensus:/consensus
+
+networks:
+  shared_network:
+    external: true
